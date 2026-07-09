@@ -13,24 +13,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout repository
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      # Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
+      # Install Salesforce CLI
       - name: Install Salesforce CLI
         run: npm install -g @salesforce/cli
 
+      # Verify Salesforce CLI
       - name: Verify Salesforce CLI
         run: sf --version
 
+      # Create auth file from GitHub Secret
       - name: Create Auth File
         run: |
           echo "${{ secrets.SFDX_AUTH_URL }}" > sfdx_auth.txt
 
+      # Authenticate to Salesforce
       - name: Authenticate to Salesforce
         run: |
           sf org login sfdx-url \
@@ -38,12 +44,15 @@ jobs:
             --alias dev-org \
             --set-default
 
+      # Delete temporary auth file
       - name: Delete Auth File
         run: rm sfdx_auth.txt
 
+      # Verify connected org
       - name: Verify Connected Org
         run: sf org list
 
+      # Validate deployment (Dry Run)
       - name: Validate Deployment
         run: |
           sf project deploy start \
@@ -52,7 +61,16 @@ jobs:
             --target-org dev-org \
             --test-level NoTestRun
 
+      # SonarQube Cloud Scan
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      # Deploy to Salesforce
+      - name: Deploy to Salesforce
+        run: |
+          sf project deploy start \
+            --source-dir force-app \
+            --target-org dev-org \
+            --test-level NoTestRun
