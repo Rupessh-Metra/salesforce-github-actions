@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the repository
+      # Checkout repository
       - name: Checkout Repository
         uses: actions/checkout@v4
 
@@ -27,11 +27,11 @@ jobs:
       - name: Install Salesforce CLI
         run: npm install -g @salesforce/cli
 
-      # Verify CLI installation
+      # Verify Salesforce CLI installation
       - name: Verify Salesforce CLI
         run: sf --version
 
-      # Create authentication file
+      # Create temporary auth file from GitHub Secret
       - name: Create Auth File
         run: |
           echo "${{ secrets.SFDX_AUTH_URL }}" > sfdx_auth.txt
@@ -44,11 +44,11 @@ jobs:
             --alias dev-org \
             --set-default
 
-      # Remove temporary auth file
+      # Delete temporary auth file
       - name: Delete Auth File
         run: rm sfdx_auth.txt
 
-      # Verify authenticated org
+      # Verify authentication
       - name: Verify Connected Org
         run: sf org list
 
@@ -56,4 +56,5 @@ jobs:
       - name: Validate Deployment
         run: |
           sf project deploy validate \
+            --source-dir force-app \
             --target-org dev-org
