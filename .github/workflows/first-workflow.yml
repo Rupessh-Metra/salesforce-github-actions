@@ -1,4 +1,4 @@
-name: My First Workflow
+name: Salesforce CI
 
 on:
   push:
@@ -6,23 +6,20 @@ on:
       - main
 
 jobs:
-  hello:
+  salesforce:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Print Current Directory
-        run: pwd
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
 
-      - name: List Repository Files
-        run: ls -la
+      - name: Install Salesforce CLI
+        run: npm install -g @salesforce/cli
 
-      - name: Print Repository Structure
-        run: |
-          ls
-          find .
-
-      - name: Print Message
-        run: echo "Hello from GitHub Actions!"
+      - name: Verify Salesforce CLI
+        run: sf --version
