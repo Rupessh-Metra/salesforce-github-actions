@@ -13,30 +13,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout repository
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # Install Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      # Install Salesforce CLI
       - name: Install Salesforce CLI
         run: npm install -g @salesforce/cli
 
-      # Verify Salesforce CLI installation
       - name: Verify Salesforce CLI
         run: sf --version
 
-      # Create temporary auth file from GitHub Secret
       - name: Create Auth File
         run: |
           echo "${{ secrets.SFDX_AUTH_URL }}" > sfdx_auth.txt
 
-      # Authenticate to Salesforce
       - name: Authenticate to Salesforce
         run: |
           sf org login sfdx-url \
@@ -44,18 +38,16 @@ jobs:
             --alias dev-org \
             --set-default
 
-      # Remove temporary auth file
       - name: Delete Auth File
         run: rm sfdx_auth.txt
 
-      # Verify authentication
       - name: Verify Connected Org
         run: sf org list
 
-      # Validate deployment
       - name: Validate Deployment
         run: |
-          sf project deploy validate \
+          sf project deploy start \
+            --dry-run \
             --source-dir force-app \
             --target-org dev-org \
             --test-level NoTestRun
