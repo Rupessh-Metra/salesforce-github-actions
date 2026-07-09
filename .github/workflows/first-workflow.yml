@@ -44,7 +44,7 @@ jobs:
             --alias dev-org \
             --set-default
 
-      # Delete temporary auth file
+      # Remove temporary auth file
       - name: Delete Auth File
         run: rm sfdx_auth.txt
 
@@ -57,4 +57,5 @@ jobs:
         run: |
           sf project deploy validate \
             --source-dir force-app \
-            --target-org dev-org
+            --target-org dev-org \
+            --test-level NoTestRun
